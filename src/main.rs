@@ -71,6 +71,40 @@ fn get_mouse_cell_coords(mouse_position: (f32, f32)) -> Option<(usize, usize)> {
     Some((xsize, ysize))
 }
 
+fn get_win_player(game: &Game) -> Option<Cell> {
+    for row in game.board {
+        if row.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::X))) {
+            return Some(Cell::X);
+        } else if row.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::O))) {
+            return Some(Cell::O);
+        }
+    }
+
+    for col in (0..3).map(|i| game.board.map(|row| row[i])) {
+        if col.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::X))) {
+            return Some(Cell::X);
+        } else if col.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::O))) {
+            return Some(Cell::O);
+        }
+    }
+
+    let diag_neg: Vec<Option<Cell>> = (0..3).map(|i| game.board[i][i]).collect();
+    if diag_neg.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::X))) {
+        return Some(Cell::X);
+    } else if diag_neg.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::O))) {
+        return Some(Cell::O);
+    }
+
+    let diag_pos: Vec<Option<Cell>> = (0..3).map(|i| game.board[i][2 - i]).collect();
+    if diag_pos.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::X))) {
+        return Some(Cell::X);
+    } else if diag_pos.iter().all(|&cell: &Option<Cell>| matches!(cell, Some(Cell::O))) {
+        return Some(Cell::O);
+    }
+
+    None
+}
+
 #[macroquad::main("TicTacToe")]
 async fn main() {
     let mut game: Game = Game {

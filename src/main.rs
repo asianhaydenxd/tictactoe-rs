@@ -96,6 +96,11 @@ async fn main() {
             }
         }
 
+        if is_key_pressed(KeyCode::Q) {
+            println!("Exit key Q pressed");
+            break;
+        }
+
         clear_background(WHITE);
         render_game(&game);
         next_frame().await;

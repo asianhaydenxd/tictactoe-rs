@@ -26,10 +26,18 @@ fn draw_grid_cell(x: usize, y: usize, cell: Option<Cell>) {
 }
 
 fn render_game(game: &Game) {
-    draw_rectangle(screen_width() / 2.0 - 25.0, screen_height() / 2.0 - 250.0, 50.0, 50.0, match game.turn {
-        Cell::X => RED,
-        Cell::O => BLUE,
-    });
+    if game.ongoing {
+        draw_rectangle(screen_width() / 2.0 - 25.0, screen_height() / 2.0 - 250.0, 50.0, 50.0, match game.turn {
+            Cell::X => RED,
+            Cell::O => BLUE,
+        });
+    } else {
+        draw_rectangle(screen_width() / 2.0 - 35.0, screen_height() / 2.0 - 260.0, 70.0, 70.0, match get_win_player(game) {
+            Some(Cell::X) => RED,
+            Some(Cell::O) => BLUE,
+            _ => GRAY,
+        });
+    }
 
     for (x, row) in game.board.iter().enumerate() {
         for (y, cell) in row.iter().enumerate() {
@@ -127,13 +135,7 @@ async fn main() {
                         };
 
                         match get_win_player(&game) {
-                            Some(cell) => {
-                                match cell {
-                                    Cell::X => println!("X wins"),
-                                    Cell::O => println!("O wins"),
-                                }
-                                game.ongoing = false;
-                            },
+                            Some(_) => game.ongoing = false,
                             None => (),
                         };
                     },

@@ -9,6 +9,7 @@ enum Cell {
 struct Game { 
     board: [[Option<Cell>; 3]; 3],
     turn: Cell,
+    ongoing: bool,
 }
 
 fn draw_grid_cell(x: usize, y: usize, cell: Option<Cell>) {
@@ -110,11 +111,12 @@ async fn main() {
     let mut game: Game = Game {
         board: [[None; 3]; 3],
         turn: Cell::X,
+        ongoing: true,
     };
 
     loop {
         let mouse_cell_coords_result = get_mouse_cell_coords(mouse_position());
-        if is_mouse_button_pressed(MouseButton::Left) {
+        if is_mouse_button_pressed(MouseButton::Left) && game.ongoing {
             match mouse_cell_coords_result {
                 Some((x, y)) => match game.board[x][y] {
                     None => {
@@ -122,6 +124,17 @@ async fn main() {
                         game.turn = match game.turn {
                             Cell::X => Cell::O,
                             Cell::O => Cell::X,
+                        };
+
+                        match get_win_player(&game) {
+                            Some(cell) => {
+                                match cell {
+                                    Cell::X => println!("X wins"),
+                                    Cell::O => println!("O wins"),
+                                }
+                                game.ongoing = false;
+                            },
+                            None => (),
                         };
                     },
                     _ => (),
@@ -133,6 +146,12 @@ async fn main() {
         if is_key_pressed(KeyCode::Q) {
             println!("Exit key Q pressed");
             break;
+        }
+
+        if is_key_pressed(KeyCode::R) {
+            game.board = [[None; 3]; 3];
+            game.turn = Cell::X;
+            game.ongoing = true;
         }
 
         clear_background(WHITE);

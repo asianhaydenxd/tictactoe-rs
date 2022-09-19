@@ -156,7 +156,7 @@ async fn main() {
             game.ongoing = true;
         }
 
-        clear_background(WHITE);
+        clear_background(Color::new(0.1, 0.1, 0.1, 1.0));
         render_game(&game);
         next_frame().await;
     }

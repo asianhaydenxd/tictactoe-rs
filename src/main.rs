@@ -82,12 +82,15 @@ async fn main() {
         let mouse_cell_coords_result = get_mouse_cell_coords(mouse_position());
         if is_mouse_button_pressed(MouseButton::Left) {
             match mouse_cell_coords_result {
-                Some((x, y)) => {
-                    game.board[x][y] = Some(game.turn);
-                    game.turn = match game.turn {
-                        Cell::X => Cell::O,
-                        Cell::O => Cell::X,
-                    };
+                Some((x, y)) => match game.board[x][y] {
+                    None => {
+                        game.board[x][y] = Some(game.turn);
+                        game.turn = match game.turn {
+                            Cell::X => Cell::O,
+                            Cell::O => Cell::X,
+                        };
+                    },
+                    _ => (),
                 },
                 None => (),
             }
